@@ -1,7 +1,6 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import Home from "./components/Home/Home";
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,6 +10,7 @@ import {
 import { DashboardRoute } from "./components/Dashboard/DashboardRoute";
 import MembersList from "./components/Dashboard/MembersList";
 import AddMemberFormic from "./components/Dashboard/AddMember/AddMemberFormic";
+import EditMemberFormic from "./components/Dashboard/EditMember/EditMemberFormic";
 
 function App() {
   return (
@@ -24,6 +24,10 @@ function App() {
           <DashboardRoute exact path="/" component={MembersList} />
 
           <DashboardRoute path="/add-member" component={AddMemberFormic} />
+          <DashboardRoute
+            path="/edit-member/:mId"
+            component={EditMemberFormic}
+          />
 
           <Route path="*">
             <NoMatch />

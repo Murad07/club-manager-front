@@ -1,6 +1,13 @@
 import React from "react";
-import { ReactMUIDatatable } from "react-material-ui-datatable";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import Avatar from "@material-ui/core/Avatar";
 import API from "../../api";
 import { useState } from "react";
 import { IconButton } from "@material-ui/core";
@@ -11,31 +18,17 @@ import { ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 import { setMembers } from "../../redux/actions/memberActions";
 import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 
-const muiTheme = createMuiTheme({
-  overrides: {
-    MuiTableCell: {
-      head: {
-        paddingTop: "36px",
-      },
-    },
+const useStyles = makeStyles({
+  table: {
+    minWidth: 650,
   },
 });
 
-// Data Table Columns Format
-const columns = [
-  {
-    name: "name",
-    label: "Name",
-  },
-  {
-    name: "_id",
-    label: "Id",
-    sortable: false,
-  },
-];
-
 export default function MembersList() {
+  const classes = useStyles();
+  const history = useHistory();
   const [loading, setLoading] = React.useState(false);
   const [isDelete, setIsDelete] = useState(false);
 
@@ -55,8 +48,8 @@ export default function MembersList() {
   }, [isDelete]);
 
   // Update member info and send to backend API
-  const handleEdit = (pId) => {
-    // history.push("/admin/edit-product/" + pId);
+  const handleEdit = (mId) => {
+    history.push("/edit-member/" + mId);
   };
 
   // Delete a member from database
@@ -73,26 +66,51 @@ export default function MembersList() {
   };
 
   return (
-    <MuiThemeProvider theme={muiTheme}>
-      {!loading && (
-        <ReactMUIDatatable
-          title={"Members list"}
-          data={members}
-          columns={columns}
-          selectable={false}
-          rowActions={({ row, rowIndex }) => (
-            <React.Fragment>
-              <IconButton onClick={() => handleEdit(row._id)}>
-                <EditOutlined />
-              </IconButton>
-              <IconButton onClick={() => handleDelete(row._id)}>
-                <DeleteOutline />
-              </IconButton>
-            </React.Fragment>
-          )}
-        />
-      )}
-      <ToastContainer autoClose={1000} />
-    </MuiThemeProvider>
+    <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell></TableCell>
+            <TableCell align="left">Name</TableCell>
+            <TableCell align="left">Age</TableCell>
+            <TableCell align="left">Phone</TableCell>
+            <TableCell align="left">Address</TableCell>
+            <TableCell align="left">Action</TableCell>
+          </TableRow>
+        </TableHead>
+
+        <TableBody>
+          {members.map((row) => (
+            <TableRow key={row.name}>
+              <TableCell align="Left">
+                <Avatar
+                  style={{
+                    border: "1px solid lightgray",
+                    width: "40px",
+                    height: "40px",
+                  }}
+                  // alt={members.name}
+                  src={row.profilePic}
+                />
+              </TableCell>
+              <TableCell align="Left">{row.name}</TableCell>
+              <TableCell align="Left">{row.age}</TableCell>
+              <TableCell align="Left">{row.contact}</TableCell>
+              <TableCell align="Left">{row.address}</TableCell>
+              <TableCell align="Left">
+                <IconButton onClick={() => handleEdit(row._id)}>
+                  <EditOutlined />
+                </IconButton>
+                <IconButton onClick={() => handleDelete(row._id)}>
+                  <DeleteOutline />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      <ToastContainer autoClose={2000} />
+    </TableContainer>
   );
 }

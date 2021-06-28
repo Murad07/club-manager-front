@@ -34,6 +34,11 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "left",
     paddingLeft: "10px",
   },
+  textFieldSmall: {
+    width: "221px",
+    textAlign: "left",
+    paddingLeft: "10px",
+  },
   uploadField: {
     position: "relative",
     display: "inline-flex",
@@ -68,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AddMemberForm = (props) => {
+const EditMemberForm = (props) => {
   const classes = useStyles();
   const {
     values: { name, age, contact, gender, profilePic, address },
@@ -88,7 +93,7 @@ const AddMemberForm = (props) => {
     setFieldTouched(name, true, false);
   };
 
-  const [fileInfo, setFileInfo] = React.useState();
+  const [fileInfo, setFileInfo] = React.useState(profilePic);
 
   // Handle Image Upload
   const hiddenProfilePicFileInput = React.useRef(null);
@@ -218,7 +223,7 @@ const AddMemberForm = (props) => {
               width: "100px",
               height: "100px",
             }}
-            // alt={}
+            alt={name}
             src={fileInfo}
           />
         )}
@@ -232,10 +237,10 @@ const AddMemberForm = (props) => {
         className={`${classes.marginAll} ${classes.addBtn} ${classes.hoverBtn}`}
         // disabled={!isValid || isSubmitting}
       >
-        Submit
+        Update
       </Button>
     </form>
   );
 };
 
-export default AddMemberForm;
+export default EditMemberForm;

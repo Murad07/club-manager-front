@@ -7,8 +7,8 @@ import { Paper } from "@material-ui/core";
 import API from "../../../api";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
-import AddMemberForm from "./AddMemberForm";
-import { useHistory } from "react-router-dom";
+import EditMemberForm from "./EditMemberForm";
+import { useHistory, useParams } from "react-router-dom";
 
 const useStyles = (theme) => ({
   paper: {
@@ -34,11 +34,22 @@ const useStyles = (theme) => ({
   },
 });
 
-const AddMemberFormic = (props) => {
+const EditMemberFormic = (props) => {
   const history = useHistory();
+  const { mId } = useParams();
+  const [member, setMember] = React.useState({});
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const submit = (data, { resetForm }) => {
-    console.log("on Submit: " + JSON.stringify(data.profilePic));
+  React.useEffect(() => {
+    API.get(`members/${mId}`).then((res) => {
+      console.log("one m: " + JSON.stringify(res));
+      setMember(res.data);
+      setIsLoading(true);
+    });
+  }, []);
+
+  const submit = (data) => {
+    console.log("on Submit: " + JSON.stringify(data));
     let memberInfo = {
       name: data.name,
       contact: data.contact,
@@ -47,12 +58,11 @@ const AddMemberFormic = (props) => {
       profilePic: data.profilePic,
     };
 
-    API.post("members", memberInfo)
+    API.patch("members/" + mId, memberInfo)
       .then((res) => {
         console.log(res);
-        if (res.status === 201) {
-          toast.success("Member Added Successfuly");
-          resetForm({});
+        if (res.status === 200) {
+          toast.success("Member Updated Successfuly");
           setTimeout(() => {
             history.push("/");
           }, 2100);
@@ -70,10 +80,11 @@ const AddMemberFormic = (props) => {
   });
 
   const values = {
-    name: "",
-    contact: "",
-    address: "",
-    age: "",
+    name: member.name,
+    contact: member.contact,
+    address: member.address,
+    age: member.age,
+    profilePic: member.profilePic,
   };
 
   const { classes } = props;
@@ -83,22 +94,27 @@ const AddMemberFormic = (props) => {
       <div className={classes.flexContainer}>
         <div className={classes.topLabel}>
           <Typography variant="body1" style={{ color: "gray" }}>
-            Add New Member
+            Edit Member Info
           </Typography>{" "}
         </div>
         <div className={classes.rightTopHalfCircle}> </div>
       </div>
 
-      <Formik
-        render={(props) => <AddMemberForm {...props} />}
-        initialValues={values}
-        validationSchema={validationSchema}
-        onSubmit={submit}
-      />
+      {isLoading ? (
+        <Formik
+          enableReinitialize
+          render={(props) => <EditMemberForm {...props} />}
+          initialValues={values}
+          validationSchema={validationSchema}
+          onSubmit={submit}
+        />
+      ) : (
+        "Loading.."
+      )}
 
       <ToastContainer autoClose={2000} />
     </Paper>
   );
 };
 
-export default withStyles(useStyles)(AddMemberFormic);
+export default withStyles(useStyles)(EditMemberFormic);
